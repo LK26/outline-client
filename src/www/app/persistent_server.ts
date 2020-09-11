@@ -12,15 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {v4 as uuid4} from 'uuid';
+import * as uuidv4 from 'uuidv4';
 
-import {ServerAlreadyAdded} from '../model/errors';
+import {ServerAlreadyAdded, ShadowsocksUnsupportedCipher} from '../model/errors';
 import * as events from '../model/events';
 import {Server, ServerRepository} from '../model/server';
+import {OutlineServer} from "./outline_server";
 
 type ServerConfig = cordova.plugins.outline.ServerConfig;
 
-export interface PersistentServer extends Server { config: ServerConfig; }
+export interface PersistentServer extends Server {
+  config: ServerConfig;
+}
 
 interface ConfigById {
   [serverId: string]: ServerConfig;
@@ -55,7 +58,10 @@ export class PersistentServerRepository implements ServerRepository {
     if (alreadyAddedServer) {
       throw new ServerAlreadyAdded(alreadyAddedServer);
     }
-    const server = this.createServer(uuid4(), serverConfig, this.eventQueue);
+    if (!OutlineServer.isServerCipherSupported(serverConfig.method)) {
+      throw new ShadowsocksUnsupportedCipher(serverConfig.method || 'unknown');
+    }
+    const server = this.createServer(uuidv4(), serverConfig, this.eventQueue);
     this.serverById.set(server.id, server);
     this.storeServers();
     this.eventQueue.enqueue(new events.ServerAdded(server));
@@ -139,6 +145,9 @@ export class PersistentServerRepository implements ServerRepository {
         const config = configById[serverId];
         try {
           const server = this.createServer(serverId, config, this.eventQueue);
+          if (!OutlineServer.isServerCipherSupported(server.config.method)) {
+            server.errorMessageId = 'unsupported-cipher';
+          }
           this.serverById.set(serverId, server);
         } catch (e) {
           // Don't propagate so other stored servers can be created.

@@ -11,14 +11,14 @@ All builds require [yarn](https://yarnpkg.com/en/docs/install), in addition to o
 
 ## Building the web app
 
-Outline clients shares the same web app across all platforms. This code is located in the src/www directory. If you are making changes to the shared web app and do not need to test platform-specific functionality, you can test in a desktop browser by running:
+Outline clients share the same web app across all platforms. This code is located in the src/www directory. If you are making changes to the shared web app and do not need to test platform-specific functionality, you can test in a desktop browser by running:
 
     yarn gulp build --platform=browser
     yarn cordova run browser
 
 The latter command will open a browser instance running the app. Browser platform development will use fake servers to test successful and unsuccessful connections.
 
-UI components are located in [src/www/ui_components](src/www/ui_components). The app logic is located in [src/www/app](www/app).
+UI components are located in [src/www/ui_components](src/www/ui_components). The app logic is located in [src/www/app](src/www/app).
 
 ## Building the Android app
 
@@ -68,14 +68,36 @@ To build for iOS, run:
 
 To learn more about developing for Apple, see [docs/apple-development](docs/apple-development.md)
 
-## Windows
+
+## Electron
+
+Unlike the Android and Apple clients, the Windows and Linux clients use the Electron framework, rather than Cordova.
+
+### Windows
 
 Additional requirements for building on Windows:
 
-* [Cygwin](https://cygwin.com/install.html). It provides the "missing Unix pieces" required by build system such as rsync (and many others)
+* [Cygwin](https://cygwin.com/install.html). It provides the "missing Unix pieces" required by build system such as rsync (and many others).  It may be necessary to manually choose to install `rsync` in the Cygwin installer.
 
-To build for Windows, run:
+To build the Electron clients, run:
 
     yarn do src/electron/build
 
-Unlike the Android and Apple clients, the Windows build uses the Electron framework, rather than Cordova.
+To run the Electron clients, run:
+
+    yarn do src/electron/run
+
+To package the Electron clients into an installer executable, run:
+
+    yarn do src/electron/package_[linux|windows]
+
+
+## Error reporting
+
+To enable error reporting through [Sentry](https://sentry.io/) for local builds, run:
+``` bash
+export SENTRY_DSN=[Sentry development API key]
+[platform-specific build command]
+```
+
+Release builds on CI are configured with a production Sentry API key.

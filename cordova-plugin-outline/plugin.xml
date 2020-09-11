@@ -48,6 +48,8 @@
             <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
           </intent-filter>
       </receiver>
+
+      <meta-data android:name="io.sentry.auto-init" android:value="false" />
     </config-file>
 
     <hook type="before_plugin_install" src="android/scripts/copy_third_party.js" />
@@ -68,6 +70,18 @@
       src="android/java/org/outline/log"
       target-dir="app/src/main/java/org/outline" />
 
+    <source-file
+      src="android/libs/arm64-v8a/libss-local.so"
+      target-dir="app/src/main/jniLibs/arm64-v8a" />
+    <source-file
+      src="android/libs/arm64-v8a/libtun2socks.so"
+      target-dir="app/src/main/jniLibs/arm64-v8a" />
+    <source-file
+      src="android/libs/x86_64/libss-local.so"
+      target-dir="app/src/main/jniLibs/x86_64" />
+    <source-file
+      src="android/libs/x86_64/libtun2socks.so"
+      target-dir="app/src/main/jniLibs/x86_64" />
     <source-file
       src="android/libs/armeabi-v7a/libss-local.so"
       target-dir="app/src/main/jniLibs/armeabi-v7a" />
